@@ -44,14 +44,27 @@ var tanks_salvaged = 0
 var soldiers = 0
 var food = 0
 var ammo = 0
-var soldier_ready_for_battle = { 'ammo' : 50, 'food' : 10 }
+var soldier_ready_for_battle = { 'ammo' : 10, 'food' : 5 }
 
 var tank_salvage_pct=50
 
 function getSoldiersForBattle() {
 
-    
-}
+ enough_food_for = Math.ceil(food / soldier_ready_for_battle['food'])
+ enough_ammo_for = Math.ceil(ammo / soldier_ready_for_battle['ammo'])
+
+ if ( isNaN(enough_ammo_for) || 
+      isNaN(enough_food_for) || 
+	  (! Number.isFinite(enough_ammo_for)) || 
+	  (! Number.isFinite(enough_food_for )) ) {
+  
+  alert("Please make sure your ammo and food are not zero!!! Make sure you have bought some soldiers!!!")
+  return false
+} 
+ 
+ document.getElementById("soldiers_ready").innerHTML = Math.min(Math.min(enough_food_for,enough_ammo_for),soldiers)
+ 
+ }
 
 function setMoney() {
    if (isNaN(document.getElementById("money").value) ) { 
@@ -183,10 +196,16 @@ function salvageTanks() {
 }
 
 window.onload = function() {
- document.getElementById("tank_cost").innerHTML = "Tank Cost: "+tank_cost;
- document.getElementById("soldier_cost").innerHTML = "Soldier Cost: "+soldier_cost;
- document.getElementById("ammo_cost").innerHTML = "Ammo Cost: "+ammo_cost;
- document.getElementById("food_cost").innerHTML = "Food Cost: "+food_cost;
+ document.getElementById("tank_cost").innerHTML = "Tank $: "+tank_cost;
+ document.getElementById("soldier_cost").innerHTML = "Soldier $: "+soldier_cost;
+ document.getElementById("ammo_cost").innerHTML = "Ammo $: "+ammo_cost;
+ document.getElementById("food_cost").innerHTML = "Food $: "+food_cost;
+ 
+ document.getElementById("food_for_battle").innerHTML = "Food: "+soldier_ready_for_battle['food'];
+ 
+ document.getElementById("ammo_for_battle").innerHTML = "Ammo: "+soldier_ready_for_battle['ammo'];
+ 
+ 
 }
 
 </script>
@@ -195,14 +214,28 @@ window.onload = function() {
 </script>
 </head>
 <body>
-<h1>War Games</h1>
-<table id="rc">
-   <tr><th colspan="8">Resource Costs</th></tr>
-  <tr><td id="tank_cost"></td>
- <td id="soldier_cost"></td>
- <td id="ammo_cost"></td>
- <td id="food_cost"></td></tr>
-</table>
+<h1>WMS (War Management System)</h1>
+<table>
+  <tr><td>
+	<table id="rc">
+	   <tr><th colspan="8">Resource Costs</th></tr>
+	  <tr><td id="tank_cost"></td>
+	 <td id="soldier_cost"></td>
+	 <td id="ammo_cost"></td>
+	 <td id="food_cost"></td></tr>
+	</table>
+  </td><td>
+
+  	<table id="rc">
+	   <tr><th colspan="8">A Soldier Needs For Battle</th></tr>
+	  <tr><td id="ammo_for_battle"></td>
+	 <td id="food_for_battle"></td>
+	</table>
+
+
+
+</td></tr>
+</table>	
 <p>
 <table>
    <tr><th colspan="4">My Resources</th></tr>
@@ -322,6 +355,19 @@ window.onload = function() {
 	<td id="num_salvaged">
 	</td>
   </tr>  
+  
+     <tr>
+	<td>Soldiers ready for battle?
+	</td>
+	<td>
+
+	<button onclick="getSoldiersForBattle()" >Get</button>
+	</td>
+	<td>Total Ready for battle:</td>
+	<td id="soldiers_ready">
+	</td>
+  </tr> 
+  
   
  </table>
 
