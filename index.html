@@ -24,6 +24,9 @@ th {
   color: white;
 }
 
+textarea {
+    height: 1em;
+}
 
 </style>
 <script type="text/javascript">
@@ -31,10 +34,10 @@ th {
 window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
 
 // Resource Costs 
-var tank_cost = 20
+var tank_cost = 20000
 var soldier_cost = 10
-var food_cost = 5
-var ammo_cost = 1
+var food_cost = 10
+var ammo_cost = 5
 
 // Player info
 var money = 0
@@ -66,6 +69,16 @@ function getSoldiersForBattle() {
  
  }
 
+ function setTankCost() {
+   if (isNaN(document.getElementById("set_tank_cost").value) ) { 
+      alert("Must input numbers only");
+    return false;
+	}
+
+  tank_cost = Number(document.getElementById("set_tank_cost").value);
+
+}
+ 
 function setMoney() {
    if (isNaN(document.getElementById("money").value) ) { 
       alert("Must input numbers only");
@@ -206,6 +219,8 @@ window.onload = function() {
  document.getElementById("ammo_for_battle").innerHTML = "Ammo: "+soldier_ready_for_battle['ammo'];
  
  document.getElementById("salvaging_a_tank").innerHTML = "Recuperate: "+tank_salvage_pct + " percent of tank cost"
+ 
+ document.getElementById("set_tank_cost").innerHTML = tank_cost
   
 }
 
@@ -220,7 +235,16 @@ window.onload = function() {
   <tr><td>
 	<table id="rc">
 	   <tr><th colspan="8">Resource Costs</th></tr>
-	  <tr><td id="tank_cost"></td>
+	  	  <tr>
+		  <td>
+Set tank cost		  
+		  <textarea name="set_tank_cost" id="set_tank_cost" cols=10></textarea>
+		  <button onclick="setTankCost()" >Set</button>
+		  </td>
+
+
+		  
+	 <td id="tank_cost"></td>
 	 <td id="soldier_cost"></td>
 	 <td id="ammo_cost"></td>
 	 <td id="food_cost"></td></tr>
