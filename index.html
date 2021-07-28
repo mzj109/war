@@ -24,6 +24,9 @@ th {
   color: white;
 }
 
+textarea {
+    height: 1em;
+}
 
 </style>
 <script type="text/javascript">
@@ -33,8 +36,8 @@ window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.ke
 // Resource Costs 
 var tank_cost = 20
 var soldier_cost = 10
-var food_cost = 5
-var ammo_cost = 1
+var food_cost = 10
+var ammo_cost = 5
 
 // Player info
 var money = 0
@@ -66,6 +69,83 @@ function getSoldiersForBattle() {
  
  }
 
+ function setResourceCost(resourceName) {
+ 
+   if (resourceName == 'tank_cost') {
+     if (isNaN(document.getElementById("tank_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     tank_cost = Number(document.getElementById("tank_cost").value);
+   
+  }
+   
+   if (resourceName == 'soldier_cost') {
+     if (isNaN(document.getElementById("soldier_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     soldier_cost = Number(document.getElementById("soldier_cost").value);
+   
+  }
+
+   if (resourceName == 'ammo_cost') {
+     if (isNaN(document.getElementById("ammo_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     ammo_cost = Number(document.getElementById("ammo_cost").value);
+   
+  }
+
+   if (resourceName == 'food_cost') {
+     if (isNaN(document.getElementById("food_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     food_cost = Number(document.getElementById("food_cost").value);
+   
+  }  
+   
+   
+}
+
+function setOperatingCost(resourceName) {
+
+   if (resourceName == 'ammo_per_soldier') {
+     if (isNaN(document.getElementById("ammo_per_soldier").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     soldier_ready_for_battle['ammo'] = Number(document.getElementById("ammo_per_soldier").value);
+   
+  }  
+  
+    if (resourceName == 'food_per_soldier') {
+     if (isNaN(document.getElementById("food_per_soldier").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     soldier_ready_for_battle['food'] = Number(document.getElementById("food_per_soldier").value);
+   
+  } 
+
+    if (resourceName == 'salvaging_a_tank') {
+     if (isNaN(document.getElementById("salvaging_a_tank").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }
+
+	if (document.getElementById("salvaging_a_tank").value > 100 || (document.getElementById("salvaging_a_tank").value) < 1) {
+	alert("Salvage value can only be percent between 1 and 100")
+	}
+     
+     tank_salvage_pct = Number(document.getElementById("salvaging_a_tank").value);
+   
+  }  
+
+}
+ 
 function setMoney() {
    if (isNaN(document.getElementById("money").value) ) { 
       alert("Must input numbers only");
@@ -91,7 +171,7 @@ function buyTanks() {
   	
   tank_total_cost = Number(document.getElementById("buy_tanks").value) * tank_cost;
   
-   if ((money - tank_total_cost) <= 0) {
+   if ((money - tank_total_cost) < 0) {
     alert("You don't have enough money to buy tanks!! You are trying to spend: " + tank_total_cost + "! And you only have: " + money)
 	return false;
 	} 
@@ -112,7 +192,7 @@ function buyAmmo() {
 
   ammo_total_cost = Number(document.getElementById("buy_ammo").value) * ammo_cost;
  
-   if ((money - ammo_total_cost) <= 0) {
+   if ((money - ammo_total_cost) < 0) {
     alert("You don't have enough money to buy ammo!!")
 	return false;
 	} 
@@ -196,16 +276,16 @@ function salvageTanks() {
 }
 
 window.onload = function() {
- document.getElementById("tank_cost").innerHTML = "Tank $: "+tank_cost;
- document.getElementById("soldier_cost").innerHTML = "Soldier $: "+soldier_cost;
- document.getElementById("ammo_cost").innerHTML = "Ammo $: "+ammo_cost;
- document.getElementById("food_cost").innerHTML = "Food $: "+food_cost;
+ document.getElementById("tank_cost").innerHTML =  tank_cost;
+ document.getElementById("soldier_cost").innerHTML = soldier_cost;
+ document.getElementById("ammo_cost").innerHTML = ammo_cost;
+ document.getElementById("food_cost").innerHTML = food_cost;
  
- document.getElementById("food_for_battle").innerHTML = "Food: "+soldier_ready_for_battle['food'];
+ document.getElementById("food_per_soldier").innerHTML = soldier_ready_for_battle['food'];
  
- document.getElementById("ammo_for_battle").innerHTML = "Ammo: "+soldier_ready_for_battle['ammo'];
+ document.getElementById("ammo_per_soldier").innerHTML =  soldier_ready_for_battle['ammo'];
  
- document.getElementById("salvaging_a_tank").innerHTML = "Recuperate: "+tank_salvage_pct + " percent of tank cost"
+ document.getElementById("salvaging_a_tank").innerHTML =  tank_salvage_pct
   
 }
 
@@ -220,27 +300,88 @@ window.onload = function() {
   <tr><td>
 	<table id="rc">
 	   <tr><th colspan="8">Resource Costs</th></tr>
-	  <tr><td id="tank_cost"></td>
-	 <td id="soldier_cost"></td>
-	 <td id="ammo_cost"></td>
-	 <td id="food_cost"></td></tr>
+
+		  <td>Set tank cost</td><td>		  
+		  <textarea name="tank_cost" id="tank_cost" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('tank_cost')" >Set</button>
+		  </td>		  
+
+		  </tr>
+
+		   <tr>
+		  <td>Set soldier cost</td><td>	  
+		  <textarea name="soldier_cost" id="soldier_cost" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('soldier_cost')" >Set</button>
+		  </td>
+		  </tr>
+		  
+ <tr>
+		  <td>Set ammo cost</td><td>	  
+		  <textarea name="ammo_cost" id="ammo_cost" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('ammo_cost')" >Set</button>
+		  </td>
+		  </tr>
+		  
+ <tr>
+		  <td>Set food cost</td><td>
+		  <textarea name="food_cost" id="food_cost" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('food_cost')" >Set</button>
+		  </td>
+		  </tr>
+		 
+
 	</table>
   </td><td>
 
-  	<table id="rc">
-	   <tr><th colspan="8">A Soldier Needs For Battle</th></tr>
-	  <tr><td id="ammo_for_battle"></td>
-	 <td id="food_for_battle"></td>
-	</table>
-</td><td>
-  	<table id="rc">
-	   <tr><th colspan="8">Salvaging a Tank</th></tr>
-	  <tr><td id="salvaging_a_tank"></td>
-	</table>
+
 </td></tr>
 
 </table>	
 <p>
+
+  	<table id="rc">
+	   <tr><th colspan="8">Operating Costs</th></tr>
+	  <tr>		  
+	    <td>Set Ammo per soldier, for battle</td><td>
+		  <textarea name="ammo_per_soldier" id="ammo_per_soldier" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('ammo_per_soldier')" >Set</button>
+		  </td>
+	  </tr>
+	  
+
+	  <tr>		  
+	    <td>Set Food per soldier, for battle</td><td>
+		  <textarea name="food_per_soldier" id="food_per_soldier" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('food_per_soldier')" >Set</button>
+		  </td>
+	  </tr>
+
+	  <tr>		  
+	    <td>Salvage Value of Tank (percentage)</td><td>
+		  <textarea name="salvaging_a_tank" id="salvaging_a_tank" cols=10></textarea>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('salvaging_a_tank')" >Set</button>
+		  </td>
+	  </tr>
+
+	  
+	</table>
+
+
+
 <table>
    <tr><th colspan="4">My Resources</th></tr>
  <tr>
