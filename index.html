@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
+<!--style>
 th, td {
   border-bottom: 1px solid #ddd;
 }
@@ -28,7 +31,7 @@ textarea {
     height: 1em;
 }
 
-</style>
+</style-->
 <script type="text/javascript">
 // Disable Enter Key Press
 window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
@@ -51,15 +54,32 @@ var soldier_ready_for_battle = { 'ammo' : 10, 'food' : 5 }
 
 var tank_salvage_pct=50
 
-function getSoldiersForBattle() {
+// Battle
+var soldiers_battling = 0
+
+function openTab(cityName) {
+  var i;
+  var x = document.getElementsByClassName("war");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  document.getElementById(cityName).style.display = "block";  
+}
+
+function getNumSoldiersForBattle() {
 
  enough_food_for = Math.ceil(food / soldier_ready_for_battle['food'])
  enough_ammo_for = Math.ceil(ammo / soldier_ready_for_battle['ammo'])
 
- if ( isNaN(enough_ammo_for) || 
-      isNaN(enough_food_for) || 
-	  (! Number.isFinite(enough_ammo_for)) || 
-	  (! Number.isFinite(enough_food_for )) ) {
+ return  Math.min(Math.min(enough_food_for,enough_ammo_for),soldiers)
+ 
+ }
+
+function getSoldiersForBattle() {
+
+ numSoldiersReady = getNumSoldiersForBattle()
+
+ if ( isNaN(numSoldiersReady) ||  (! Number.isFinite(numSoldiersReady)) ) {
   
   alert("Please make sure your ammo and food are not zero!!! Make sure you have bought some soldiers!!!")
   return false
@@ -68,6 +88,60 @@ function getSoldiersForBattle() {
  document.getElementById("soldiers_ready").innerHTML = Math.min(Math.min(enough_food_for,enough_ammo_for),soldiers)
  
  }
+ 
+ function sendSoldiersIntoBattle() {
+   
+ if (document.getElementById("send_soldiers_into_battle").value <= 0 || isNaN(document.getElementById("send_soldiers_into_battle").value )) {
+  alert("How many soldiers did you want to send into battle again?")
+ }   
+
+ numSoldiersReady = getNumSoldiersForBattle()
+
+ if ( isNaN(numSoldiersReady) ||  (! Number.isFinite(numSoldiersReady))  ) {
+  
+  alert("Make sure you have bought some soldiers!!!")
+  return false
+} 
+
+if (  numSoldiersReady <= 0 ) {
+
+  alert("Make sure you have enough resources, and soldiers!!")
+  return false
+  
+}
+
+ if ( document.getElementById("send_soldiers_into_battle").innerHTML > soldiers ) {
+   
+   alert("You can't send into battle more soldiers than you currently have??!!??")
+   
+ }
+ 
+ sendSoldiers = Number(document.getElementById("send_soldiers_into_battle").value)
+ 
+  if ( (soldiers - sendSoldiers) < 0 ) {
+   
+   alert("You can't send in more soldiers than you have!!" ) 
+   return false
+ }  
+ 
+ 
+ food_needed = sendSoldiers * soldier_ready_for_battle['food']
+ ammo_needed = sendSoldiers * soldier_ready_for_battle['ammo']
+ 
+ if ( (food_needed > food) || (ammo_needed > ammo) ) {
+      alert("Manage your resources, your soldiers do not have enough food and/or ammo to go into battle")
+      return false
+ }
+ 
+ 
+ soldiers_battling = sendSoldiers + soldiers_battling
+ soldiers = soldiers - sendSoldiers
+ 
+ document.getElementById("soldiers_battling").innerHTML = soldiers_battling
+ document.getElementById("num_soldiers").innerHTML = soldiers
+ 
+  
+ } 
 
  function setResourceCost(resourceName) {
  
@@ -154,6 +228,7 @@ function setMoney() {
 
   money = Number(document.getElementById("money").value);
   document.getElementById("player_has").innerHTML = money;
+  document.getElementById("money_display").innerHTML = money;
 }
 function setPlayer() {
   player_name = document.getElementById("player_name").value;
@@ -276,33 +351,40 @@ function salvageTanks() {
 }
 
 window.onload = function() {
- document.getElementById("tank_cost").innerHTML =  tank_cost;
- document.getElementById("soldier_cost").innerHTML = soldier_cost;
- document.getElementById("ammo_cost").innerHTML = ammo_cost;
- document.getElementById("food_cost").innerHTML = food_cost;
+ document.getElementById("tank_cost").value =  tank_cost;
+ document.getElementById("soldier_cost").value = soldier_cost;
+ document.getElementById("ammo_cost").value = ammo_cost;
+ document.getElementById("food_cost").value = food_cost;
  
- document.getElementById("food_per_soldier").innerHTML = soldier_ready_for_battle['food'];
+ document.getElementById("food_per_soldier").value = soldier_ready_for_battle['food'];
  
- document.getElementById("ammo_per_soldier").innerHTML =  soldier_ready_for_battle['ammo'];
+ document.getElementById("ammo_per_soldier").value =  soldier_ready_for_battle['ammo'];
  
- document.getElementById("salvaging_a_tank").innerHTML =  tank_salvage_pct
+ document.getElementById("salvaging_a_tank").value =  tank_salvage_pct
   
 }
-
-</script>
-<script>
 
 </script>
 </head>
 <body>
 <h1>WMS (War Management System)</h1>
-<table>
-  <tr><td>
-	<table id="rc">
-	   <tr><th colspan="8">Resource Costs</th></tr>
 
+
+<div class="w3-bar w3-black">
+  <button class="w3-bar-item w3-button" onclick="openTab('war_params')">War Parameters</button>
+  <button class="w3-bar-item w3-button" onclick="openTab('oob')">Order of Battle</button>
+  <button class="w3-bar-item w3-button" onclick="openTab('battle')">Battle</button>
+</div>
+
+
+<div id="war_params" class="w3-container war">
+
+
+<table class="w3-table w3-striped w3-border">
+	   <tr class="w3-green"><th colspan="8">Resource Costs</th></tr>
 		  <td>Set tank cost</td><td>		  
-		  <textarea name="tank_cost" id="tank_cost" cols=10></textarea>
+		  <input type="text" name="tank_cost" id="tank_cost"></input>
+		  
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('tank_cost')" >Set</button>
@@ -312,46 +394,40 @@ window.onload = function() {
 
 		   <tr>
 		  <td>Set soldier cost</td><td>	  
-		  <textarea name="soldier_cost" id="soldier_cost" cols=10></textarea>
+		  <input type="text" name="soldier_cost" id="soldier_cost"  ></input>
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('soldier_cost')" >Set</button>
 		  </td>
 		  </tr>
 		  
- <tr>
+		  <tr>
 		  <td>Set ammo cost</td><td>	  
-		  <textarea name="ammo_cost" id="ammo_cost" cols=10></textarea>
+		  <input type="text" name="ammo_cost" id="ammo_cost"  ></input>
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('ammo_cost')" >Set</button>
 		  </td>
 		  </tr>
 		  
- <tr>
+		  <tr>
 		  <td>Set food cost</td><td>
-		  <textarea name="food_cost" id="food_cost" cols=10></textarea>
+		  <input type="text" name="food_cost" id="food_cost"  </input>
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('food_cost')" >Set</button>
 		  </td>
 		  </tr>
-		 
-
-	</table>
-  </td><td>
-
-
-</td></tr>
-
 </table>	
-<p>
 
-  	<table id="rc">
-	   <tr><th colspan="8">Operating Costs</th></tr>
+
+
+  	<table class="w3-table w3-striped w3-border">
+	   <tr class="w3-green">
+	     <th colspan="8">Operating Costs</th></tr>
 	  <tr>		  
 	    <td>Set Ammo per soldier, for battle</td><td>
-		  <textarea name="ammo_per_soldier" id="ammo_per_soldier" cols=10></textarea>
+		  <input type="text" name="ammo_per_soldier" id="ammo_per_soldier"  </input>
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('ammo_per_soldier')" >Set</button>
@@ -361,7 +437,7 @@ window.onload = function() {
 
 	  <tr>		  
 	    <td>Set Food per soldier, for battle</td><td>
-		  <textarea name="food_per_soldier" id="food_per_soldier" cols=10></textarea>
+		  <input type="text" name="food_per_soldier" id="food_per_soldier" ></input>
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('food_per_soldier')" >Set</button>
@@ -370,7 +446,7 @@ window.onload = function() {
 
 	  <tr>		  
 	    <td>Salvage Value of Tank (percentage)</td><td>
-		  <textarea name="salvaging_a_tank" id="salvaging_a_tank" cols=10></textarea>
+		  <input type="text" name="salvaging_a_tank" id="salvaging_a_tank"  ></input>
 		  </td>
 		  <td>
 		  <button onclick="setResourceCost('salvaging_a_tank')" >Set</button>
@@ -380,10 +456,12 @@ window.onload = function() {
 	  
 	</table>
 
+</div>
 
+<div id="oob" class="w3-container war" style="display:none">
 
-<table>
-   <tr><th colspan="4">My Resources</th></tr>
+<table class="w3-table w3-striped w3-border">
+   <tr class="w3-green"><th colspan="4">My Resources</th></tr>
  <tr>
     <td>Set Player Name
 	</td>
@@ -515,6 +593,46 @@ window.onload = function() {
   
   
  </table>
+ 
+ </div>
+ 
+ 
+ 
+ 
+ 
+ <div id="battle" class="w3-container war" style="display:none">
+   
+ 
+  <p>w3-card</p>
+ 
+   <ul class="w3-ul w3-card-4" style="width:50%">
+    <li id=money_display></li>
+    <li>Eve</li>
+    <li>Adam</li>
+  </ul>
+ 
+ 
+   
+ 
+ <table class="w3-table w3-striped w3-border">
+   <tr class="w3-green"><th colspan="5">Battling</th></tr>
+ <tr>
+    <td>Send Soldiers Into Battle</td>
+	<td>
+		<form>
+		<input name="send_soldiers_into_battle" id="send_soldiers_into_battle">
+		</form>
+	</td>
+	<td>
+		<button onclick="sendSoldiersIntoBattle()" >Set</button>
+	<td>Total in battle:</td>
+	<td id="soldiers_battling">
+	</td>
+  </tr>
+ <tr>
+</table>
+ 
+</div>
 
 </body>
 </html>
