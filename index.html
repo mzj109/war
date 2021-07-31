@@ -54,8 +54,9 @@ var soldier_ready_for_battle = { 'ammo' : 10, 'food' : 5 }
 var loot_boxes = 0
 var pillage_boxes = 0
 var casualties = 0
-
 var tank_salvage_pct=50
+var loot_value = 10
+var pillage_value = 10
 
 // Battle
 var soldiers_battling = 0
@@ -244,6 +245,23 @@ if (  numSoldiersReady <= 0 ) {
   }  
    
    
+   if (resourceName == 'loot_value') {
+     if (isNaN(document.getElementById("loot_value").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     loot_value = Number(document.getElementById("loot_value").value);
+  } 
+
+   if (resourceName == 'pillage_value') {
+     if (isNaN(document.getElementById("pillage_value").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+    pillage_value = Number(document.getElementById("pillage_value").value);
+  }  
+   
+   
 }
 
 function setOperatingCost(resourceName) {
@@ -417,12 +435,11 @@ window.onload = function() {
  document.getElementById("soldier_cost").value = soldier_cost;
  document.getElementById("ammo_cost").value = ammo_cost;
  document.getElementById("food_cost").value = food_cost;
- 
  document.getElementById("food_per_soldier").value = soldier_ready_for_battle['food'];
- 
  document.getElementById("ammo_per_soldier").value =  soldier_ready_for_battle['ammo'];
- 
  document.getElementById("salvaging_a_tank").value =  tank_salvage_pct
+ document.getElementById("loot_value").value =  loot_value;
+ document.getElementById("pillage_value").value =  pillage_value;
   
 }
 
@@ -444,7 +461,23 @@ window.onload = function() {
 
 <table class="w3-table w3-striped w3-border">
 	   <tr class="w3-green"><th colspan="8">Resource Costs</th></tr>
-		  <td>Set tank cost</td><td>		  
+ <tr>
+    <td>Set Commander's Name
+	</td>
+	<td>
+		<form>
+		<input name="player_name" id="player_name">
+		</form>
+	</td>
+	<td>
+		<button onclick="setPlayer()" >Set</button>
+	</td>
+	<td id="player_name_set">
+	</td>
+  </tr>
+
+  
+   <td>Set tank cost</td><td>		  
 		  <input type="text" name="tank_cost" id="tank_cost"></input>
 		  
 		  </td>
@@ -483,7 +516,6 @@ window.onload = function() {
 </table>	
 
 
-
   	<table class="w3-table w3-striped w3-border">
 	   <tr class="w3-green">
 	     <th colspan="8">Operating Costs</th></tr>
@@ -517,6 +549,30 @@ window.onload = function() {
 
 	  
 	</table>
+  	
+   <table class="w3-table w3-striped w3-border">
+	   <tr class="w3-green">
+	     <th colspan="8">Set Value of Loot and Pillage</th></tr>
+	  <tr>		  
+	    <td>1 box of loot is $:</td><td>
+		  <input type="text" name="loot_value" id="loot_value"  </input>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('loot_value')" >Set</button>
+		  </td>
+	  </tr>
+	  
+
+	  <tr>		  
+	    <td>1 box of pillage is $:</td><td>
+		  <input type="text" name="pillage_value" id="pillage_value" ></input>
+		  </td>
+		  <td>
+		  <button onclick="setResourceCost('pillage_value')" >Set</button>
+		  </td>
+	  </tr>
+
+  </table>
 
 </div>
 
@@ -524,7 +580,7 @@ window.onload = function() {
 
 <table class="w3-table w3-striped w3-border">
    <tr class="w3-green"><th colspan="4">My Resources</th></tr>
- <tr>
+ <!--tr>
     <td>Set Commander's Name
 	</td>
 	<td>
@@ -538,7 +594,7 @@ window.onload = function() {
 	<td id="player_name_set">
 	</td>
   </tr>
- <tr>
+ <tr-->
     <td>Set Initial Money
 	</td>
 	<td>
@@ -625,7 +681,7 @@ window.onload = function() {
 	</td>
   </tr>  
   
-   <tr>
+   <!--tr>
 	<td>Salvage Tanks
 	</td>
 	<td>
@@ -640,7 +696,6 @@ window.onload = function() {
 	<td id="num_salvaged">
 	</td>
   </tr>  
-  
      <tr>
 	<td>Soldiers ready for battle?
 	</td>
@@ -651,7 +706,7 @@ window.onload = function() {
 	<td>Total Ready for battle:</td>
 	<td id="soldiers_ready">
 	</td>
-  </tr> 
+  </tr--> 
   
   
  </table>
@@ -678,6 +733,32 @@ window.onload = function() {
  
  <table class="w3-table w3-striped w3-border">
    <tr class="w3-green"><th colspan="5">Battling</th></tr>
+   <tr>
+	<td>Salvage Tanks
+	</td>
+	<td>
+		<form>
+		<input name="salvage_tanks" id="salvage_tanks">
+		</form>
+	</td>
+	<td>
+	<button onclick="salvageTanks()" >Salvage</button>
+	</td>
+	<td>Total Salvaged:</td>
+	<td id="num_salvaged">
+	</td>
+  </tr>  
+     <tr>
+	<td>Soldiers ready for battle?
+	</td>
+	<td>
+
+	<button onclick="getSoldiersForBattle()" >Get</button>
+	</td>
+	<td>Total Ready for battle:</td>
+	<td id="soldiers_ready">
+	</td>
+  </tr> 
  <tr>
     <td>Send Soldiers Into Battle</td>
 	<td>
