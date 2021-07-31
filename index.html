@@ -59,6 +59,7 @@ var tank_salvage_pct=50
 
 // Battle
 var soldiers_battling = 0
+var soldiers_recalled = 0
 
 function openTab(cityName) {
   var i;
@@ -142,9 +143,67 @@ if (  numSoldiersReady <= 0 ) {
  
  document.getElementById("soldiers_battling").innerHTML = soldiers_battling
  document.getElementById("num_soldiers").innerHTML = soldiers
- 
-  
+
+
  } 
+ 
+ function recallSoldiersFromBattle() {
+
+ recall_now = Number(document.getElementById("recall_soldiers_from_battle").value)
+
+ if (isNaN(recall_now) ) {
+  alert("you can only enter numbers in the recall box");
+   return false;
+ }
+
+ if (recall_now == 0 ) {
+   alert("No point recalling 0 soldiers!");
+   return false;
+  }
+   
+   if ( recall_now > soldiers_battling) {
+
+     alert("you cannot recall more than soldiers currently battling")
+     return false;
+    }
+  
+  soldiers_battling = soldiers_battling - recall_now
+  soldiers_recalled = soldiers_recalled + recall_now
+  document.getElementById("soldiers_battling").innerHTML = soldiers_battling;
+  document.getElementById("soldiers_recalled").innerHTML = soldiers_recalled;
+   
+ }
+
+ function recordCasualties() {
+
+ record_casualties = Number(document.getElementById("record_casualties").value)
+
+ if (isNaN(record_casualties) ) {
+  alert("you can only enter numbers in the recall box");
+   return false;
+ }
+
+ if (record_casualties == 0 ) {
+   alert("No point recording 0 casulaties!");
+   return false;
+  }
+
+ if (record_casualties > soldiers) { 
+   alert("You cannot record more casualties than total soldiers!")
+   return false;
+ }
+
+  casualties = casualties + record_casualties // print
+  soldiers = soldiers - record_casualties //print
+  document.getElementById("total_casualties").innerHTML = total_casualties;
+  document.getElementById("num_soldiers").innerHTML = soldiers;
+  
+
+
+
+
+ }
+ 
 
  function setResourceCost(resourceName) {
  
@@ -657,7 +716,7 @@ window.onload = function() {
 	<td>
 		<button onclick="recordCasulties()" >Set</button>
 	<td>Total Casualties:</td>
-	<td id="soldiers_battling">
+	<td id="total_casualties">
 	</td>
   </tr>  
 
