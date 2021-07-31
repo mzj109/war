@@ -51,6 +51,9 @@ var soldiers = 0
 var food = 0
 var ammo = 0
 var soldier_ready_for_battle = { 'ammo' : 10, 'food' : 5 }
+var loot_boxes = 0
+var pillage_boxes = 0
+var casualties = 0
 
 var tank_salvage_pct=50
 
@@ -463,7 +466,7 @@ window.onload = function() {
 <table class="w3-table w3-striped w3-border">
    <tr class="w3-green"><th colspan="4">My Resources</th></tr>
  <tr>
-    <td>Set Player Name
+    <td>Set Commander's Name
 	</td>
 	<td>
 		<form>
@@ -629,7 +632,64 @@ window.onload = function() {
 	<td id="soldiers_battling">
 	</td>
   </tr>
+  
  <tr>
+    <td>Recall Soldiers </td>
+	<td>
+		<form>
+		<input name="recall_soldiers_from_battle" id="recall_soldiers_from_battle">
+		</form>
+	</td>
+	<td>
+		<button onclick="recallSoldiersFromBattle()" >Set</button>
+	<td>Total Recalled:</td>
+	<td id="soldiers_recalled">
+	</td>
+  </tr>  
+ 
+  <tr>
+    <td>Record Casualties </td>
+	<td>
+		<form>
+		<input name="record_casualties" id="record_casualties">
+		</form>
+	</td>
+	<td>
+		<button onclick="recordCasulties()" >Set</button>
+	<td>Total Casualties:</td>
+	<td id="soldiers_battling">
+	</td>
+  </tr>  
+
+   <tr>
+    <td>Record pillaged-boxes captured</td>
+	<td>
+		<form>
+		<input name="record_pillaged_boxes" id="record_pillaged_boxes">
+		</form>
+	</td>
+	<td>
+		<button onclick="recordPillagedBoxes()" >Set</button>
+	<td>Total Pillaged Boxes:</td>
+	<td id="boxes_pillaged">
+	</td>
+  </tr>  
+ 
+  <td>Record loot-boxes </td>
+	<td>
+		<form>
+		<input name="record_loot_boxes" id="record_loot_boxes">
+		</form>
+	</td>
+	<td>
+		<button onclick="recordLootBoxes()" >Set</button>
+	<td>Total Loot Boxes:</td>
+	<td id="boxes_looted">
+	</td>
+  </tr>  
+
+  
+ 
 </table>
  
 </div>
