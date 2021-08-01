@@ -112,11 +112,13 @@ if (  numSoldiersReady <= 0 ) {
  
  
  soldiers_battling = sendSoldiers + soldiers_battling
- soldiers = soldiers - sendSoldiers
+ food = food - food_needed
+ ammo = ammo - ammo_needed
  
  document.getElementById("soldiers_battling").innerHTML = soldiers_battling
- document.getElementById("num_soldiers").innerHTML = soldiers
  document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers
+ document.getElementById("food_display").innerHTML = "Food: " + food
+ document.getElementById("ammo_display").innerHTML = "Ammo: " + ammo
 
 
  } 
@@ -140,6 +142,12 @@ if (  numSoldiersReady <= 0 ) {
      alert("you cannot recall more than soldiers currently battling")
      return false;
     }
+
+  if ( recall_now > soldiers_battling ) {
+
+    alert("you cannot recall more than the number of soldiers in battle!")
+    return false;
+  }
   
   soldiers_battling = soldiers_battling - recall_now
   soldiers_recalled = soldiers_recalled + recall_now
@@ -167,11 +175,18 @@ if (  numSoldiersReady <= 0 ) {
    return false;
  }
 
+   if ( record_casualties > soldiers_battling ) {
+     alert("You cannot record more casualties than the number of soldiers currently in battle")
+     return false;
+   }
+
   casualties = casualties + record_casualties // print
   soldiers = soldiers - record_casualties //print
+  soldiers_battling = soldiers_battling - record_casualties
   document.getElementById("total_casualties").innerHTML = casualties;
   document.getElementById("num_soldiers").innerHTML = soldiers;
   document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
+  document.getElementById("soldiers_battling").innerHTML = soldiers_battling;
 
  }
  
