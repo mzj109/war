@@ -75,8 +75,10 @@ function getSoldiersForBattle() {
  }
  
  function sendSoldiersIntoBattle() {
+ 
+  sendSoldiers = Number(document.getElementById("send_soldiers_into_battle").value)
    
- if (document.getElementById("send_soldiers_into_battle").value <= 0 || isNaN(document.getElementById("send_soldiers_into_battle").value )) {
+ if (sendSoldiers <= 0 || isNaN(sendSoldiers )) {
   alert("How many soldiers did you want to send into battle again?")
  }   
 
@@ -101,23 +103,22 @@ if (  numSoldiersReady <= 0 ) {
    
  }
  
- sendSoldiers = Number(document.getElementById("send_soldiers_into_battle").value)
  
-  if ( (soldiers - sendSoldiers) < 0 ) {
+  if ( (numSoldiersReady - sendSoldiers) < 0 ) {
    
-   alert("You can't send in more soldiers than you have!!" ) 
+   alert("You can't send in more soldiers than are ready for battle!!" ) 
    return false
  }  
  
  
  food_needed = sendSoldiers * soldier_ready_for_battle['food']
  ammo_needed = sendSoldiers * soldier_ready_for_battle['ammo']
- 
+/* 
  if ( (food_needed > food) || (ammo_needed > ammo) ) {
       alert("Manage your resources, your soldiers do not have enough food and/or ammo to go into battle")
       return false
  }
- 
+*/ 
  
  soldiers_battling = sendSoldiers + soldiers_battling
  food = food - food_needed
@@ -236,7 +237,7 @@ function addWarDay() {
     return false;
   }
 
-  alert("You have used up $: " + total_money_to_start_new_day + " to start a new day of war. Food for battling soldiers, $: " +  war_food_money_for_battling_soldiers + " Food for non battling soldiers, $" + war_food_non_battling_soldiers + "Ammo, $" + ammo_money_for_battling_soldiers )
+  alert("You have used up $: " + total_money_to_start_new_day + " to start a new day of war. Food for battling soldiers, $: " +  war_food_money_for_battling_soldiers + " Food for non battling soldiers, $: " + war_food_non_battling_soldiers + "Ammo, $" + ammo_money_for_battling_soldiers )
      
 
   day_of_war = day_of_war + 1
