@@ -8,10 +8,12 @@
 // Disable Enter Key Press
 window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
 
+// war day
+var day_of_war = 1
 // Resource Costs 
-var tank_cost = 20
+var tank_cost = 200
 var soldier_cost = 10
-var food_cost = 10
+var food_cost = 2
 var ammo_cost = 5
 
 // Player info
@@ -22,7 +24,7 @@ var tanks_salvaged = 0
 var soldiers = 0
 var food = 0
 var ammo = 0
-var soldier_ready_for_battle = { 'ammo' : 10, 'food' : 5 }
+var soldier_ready_for_battle = { 'ammo' : 5, 'food' : 2 }
 var loot_boxes = 0
 var pillage_boxes = 0
 var casualties = 0
@@ -48,7 +50,7 @@ function getNumSoldiersForBattle() {
  enough_food_for = Math.ceil(food / soldier_ready_for_battle['food'])
  enough_ammo_for = Math.ceil(ammo / soldier_ready_for_battle['ammo'])
 
- return  Math.min(Math.min(enough_food_for,enough_ammo_for),soldiers)
+ return  Math.min(Math.min(enough_food_for,enough_ammo_for),(soldiers-soldiers_battling))
  
  }
 
@@ -119,6 +121,8 @@ if (  numSoldiersReady <= 0 ) {
  document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers
  document.getElementById("food_display").innerHTML = "Food: " + food
  document.getElementById("ammo_display").innerHTML = "Ammo: " + ammo
+ document.getElementById("num_ammo").innerHTML = ammo
+ document.getElementById("num_food").innerHTML = food
 
 
  } 
@@ -211,6 +215,34 @@ function recordLootBoxes() {
   document.getElementById("boxes_looted").innerHTML = loot_boxes;
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("money_display").innerHTML = "Money: " + money;
+
+ }
+
+function addWarDay() {
+
+  war_food_money_for_battling_soldiers = soldier_ready_for_battle['food'] * soldiers_battling
+  war_food_non_battling_soldiers = food_cost * (soldiers - soldiers_battling )
+  ammo_money_for_battling_soldiers = soldier_ready_for_battle['ammo'] * soldiers_battling
+  total_money_to_start_new_day = ammo_money_for_battling_soldiers +  war_food_money_for_battling_soldiers  + war_food_non_battling_soldiers
+
+  if ( total_money_to_start_new_day > money ) {
+   alert("You need at least this much money to start a new day of war, $:" + total_money_to_start_new_day + " Breakdown: Food for non-battling soldiers, $: " + war_food_non_battling_soldiers + " Food for battling soldiers, $: " + war_food_money_for_battling_soldiers + " Ammo for soldiers battling: "+ ammo_money_for_battling_soldiers );
+    return false;
+  }
+
+  alert("You have used up $: " + total_money_to_start_new_day + " to start a new day of war. Food for battling soldiers, $: " +  war_food_money_for_battling_soldiers + " Food for non battling soldiers, $" + war_food_non_battling_soldiers + "Ammo, $" + ammo_money_for_battling_soldiers )
+     
+
+  day_of_war = day_of_war + 1
+  money = money - total_money_to_start_new_day
+  food = food - (soldier_ready_for_battle['food'] * soldiers_battling)
+  food = food - (soldiers - soldiers_battling) 
+
+  document.getElementById("player_has").innerHTML = money;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
+  document.getElementById("food_display").innerHTML = "Food: " + food;
+  document.getElementById("num_food").innerHTML = food;
+  document.getElementById("days_of_war").innerHTML = day_of_war;
 
  }
 
@@ -362,7 +394,7 @@ function buyTanks() {
   tank_total_cost = Number(document.getElementById("buy_tanks").value) * tank_cost;
   
    if ((money - tank_total_cost) < 0) {
-    alert("You don't have enough money to buy tanks!! You are trying to spend: " + tank_total_cost + "! And you only have: " + money)
+    alert("You don\'t have enough money to buy tanks!! You are trying to spend: " + tank_total_cost + "! And you only have: " + money)
 	return false;
 	} 
   
@@ -384,7 +416,7 @@ function buyAmmo() {
   ammo_total_cost = Number(document.getElementById("buy_ammo").value) * ammo_cost;
  
    if ((money - ammo_total_cost) < 0) {
-    alert("You don't have enough money to buy ammo!!")
+    alert("You don\'t have enough money to buy ammo!!")
 	return false;
 	} 
  
@@ -409,7 +441,7 @@ function buyFood() {
   food_total_cost = Number(document.getElementById("buy_food").value) * food_cost;
   
    if ((money - food_total_cost) <= 0) {
-    alert("You don't have enough money to buy food!!")
+    alert("You don\'t have enough money to buy food!!")
 	return false;
 	} 
  
@@ -433,7 +465,7 @@ function buySoldiers() {
   soldier_total_cost = Number(document.getElementById("buy_soldiers").value) * soldier_cost;
   
     if ((money - soldier_total_cost) <= 0) {
-    alert("You don't have enough money to buy soldiers!!")
+    alert("You don\'t have enough money to buy soldiers!!")
 	return false;
 	} 
   
@@ -503,76 +535,76 @@ window.onload = function() {
 
 
 <table class="w3-table w3-striped w3-border">
-	   <tr class="w3-green"><th colspan="8">Resource Costs</th></tr>
+	   <tr class="w3-green w3-round-large"><th colspan="8">Resource Costs</th></tr>
 
   
-   <td>Set tank cost</td><td>		  
+   <td title="If you buy too many tanks, you may not have enough money for other stuff!">1 tank costs,$:</td><td>		  
 		  <input type="text" name="tank_cost" id="tank_cost"></input>
 		  
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('tank_cost')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('tank_cost')" >Set</button>
 		  </td>		  
 
 		  </tr>
 
 		   <tr>
-		  <td>Set soldier cost</td><td>	  
+		  <td>Cost to buy and train 1 soldier, $:</td><td>	  
 		  <input type="text" name="soldier_cost" id="soldier_cost"  ></input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('soldier_cost')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('soldier_cost')" >Set</button>
 		  </td>
 		  </tr>
 		  
 		  <tr>
-		  <td>Set ammo cost</td><td>	  
+		  <td>1 box of ammo costs, $:</td><td>	  
 		  <input type="text" name="ammo_cost" id="ammo_cost"  ></input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('ammo_cost')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('ammo_cost')" >Set</button>
 		  </td>
 		  </tr>
 		  
 		  <tr>
-		  <td>Set food cost</td><td>
+		  <td title="Important, on each new day of war a soldier will use of 1 box of food!! Even if the soldier is not in battle!">1 box of food costs, $:</td><td>
 		  <input type="text" name="food_cost" id="food_cost"  </input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('food_cost')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('food_cost')" >Set</button>
 		  </td>
 		  </tr>
 </table>	
 
 
   	<table class="w3-table w3-striped w3-border">
-	   <tr class="w3-green">
-	     <th colspan="8">Operating Costs</th></tr>
+	   <tr class="w3-green w3-round-large">
+	     <th colspan="8">Resource Usage</th></tr>
 	  <tr>		  
-	    <td>Set Ammo per soldier, for battle</td><td>
+	    <td title="The amount of ammo a soldier needs to go into battle" >Boxes of ammo a soldier needs, for a day of battle:</td><td>
 		  <input type="text" name="ammo_per_soldier" id="ammo_per_soldier"  </input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('ammo_per_soldier')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('ammo_per_soldier')" >Set</button>
 		  </td>
 	  </tr>
 	  
 
 	  <tr>		  
-	    <td>Set Food per soldier, for battle</td><td>
+	    <td title="Amount of Food a soldier needs to go into battle. Also, the amount of food a soldier needs on a daily basis. Note: A soldier gets an extra food ration when going into battle! Food resources must be used wisely!">Boxes of food a soldier needs, for a day of battle:</td><td>
 		  <input type="text" name="food_per_soldier" id="food_per_soldier" ></input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('food_per_soldier')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('food_per_soldier')" >Set</button>
 		  </td>
 	  </tr>
 
 	  <tr>		  
-	    <td>Salvage Value of Tank (percentage)</td><td>
+	    <td title="You will get some percentage of a tanks original value back when you salvage it! Set the % value here">Salvage Value of Tank (percentage)</td><td>
 		  <input type="text" name="salvaging_a_tank" id="salvaging_a_tank"  ></input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('salvaging_a_tank')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('salvaging_a_tank')" >Set</button>
 		  </td>
 	  </tr>
 
@@ -580,24 +612,24 @@ window.onload = function() {
 	</table>
   	
    <table class="w3-table w3-striped w3-border">
-	   <tr class="w3-green">
+	   <tr class="w3-green w3-round-large">
 	     <th colspan="8">Set Value of Loot and Pillage</th></tr>
 	  <tr>		  
-	    <td>1 box of loot is $:</td><td>
+	    <td title="When you record loot you will receive this $ amount for every box of loot!">1 box of loot is worth, $:</td><td>
 		  <input type="text" name="loot_value" id="loot_value"  </input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('loot_value')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('loot_value')" >Set</button>
 		  </td>
 	  </tr>
 	  
 
 	  <tr>		  
-	    <td>1 box of pillage is $:</td><td>
+	    <td title="When you pillage, you will get this $ amount for every box of stuff you've pillaged!">1 box of pillage is worth, $:</td><td>
 		  <input type="text" name="pillage_value" id="pillage_value" ></input>
 		  </td>
 		  <td>
-		  <button onclick="setResourceCost('pillage_value')" >Set</button>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('pillage_value')" >Set</button>
 		  </td>
 	  </tr>
 
@@ -609,7 +641,7 @@ window.onload = function() {
  
   
 <table class="w3-table w3-striped w3-border">
-   <tr class="w3-green"><th colspan="4">General Officer, Commander In Chief</th></tr>
+   <tr class="w3-green w3-round-large"><th colspan="4">General Officer, Commander In Chief</th></tr>
   <tr>
     <td>Set Commander's Name
 	</td>
@@ -619,7 +651,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="setPlayer()" >Set</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="setPlayer()" >Set</button>
 	</td>
 	<td id="player_name_set">
 	</td>
@@ -627,8 +659,8 @@ window.onload = function() {
   </table>
 
 <table class="w3-table w3-striped w3-border">
-   <tr class="w3-green"><th colspan="4">My Resources</th></tr>
-    <td>Set Initial Money
+   <tr class="w3-green w3-round-large"><th colspan="4">My Resources</th></tr>
+    <td title="Your starting pot of money, use it wisely. Hint: simple math will help!">Set Initial Money
 	</td>
 	<td>
 		<form>
@@ -636,7 +668,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="setMoney()" >Set</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="setMoney()" >Set</button>
 	</td>
 
 	<td>You have: </td>
@@ -656,7 +688,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-	<button onclick="buyTanks()" >Buy</button>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buyTanks()" >Buy</button>
 	</td>
 	<td>Total Tanks:</td>
 	<td id="num_tanks">
@@ -664,7 +696,7 @@ window.onload = function() {
   </tr>
 
   <tr>
-	<td>Buy Ammo
+	<td title="When you send soldiers into battle, ammo will be used up!">Buy Ammo Boxes
 	</td>
 	<td>
 		<form>
@@ -672,15 +704,15 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-	<button onclick="buyAmmo()" >Buy</button>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buyAmmo()" >Buy</button>
 	</td>
-	<td>Total Ammo:</td>
+	<td>Total Ammo Boxes:</td>
 	<td id="num_ammo">
 	</td>
   </tr>
 
   <tr>
-	<td>Buy Food
+	<td title="When you send soldiers into battle, food will be eaten. When you record a new day of battle food will be eaten!" >Buy Food Boxes
 	</td>
 	<td>
 		<form>
@@ -688,15 +720,15 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-	<button onclick="buyFood()" >Buy</button>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buyFood()" >Buy</button>
 	</td>
-	<td>Total Food:</td>
+	<td>Total Food Boxes:</td>
 	<td id="num_food">
 	</td>
   </tr>  
 
   <tr>
-	<td>Buy Soliders
+	<td title="you can buy soldiers, but be warned that to send them into battle you need the required amount of food and ammo" >Buy Soldiers
 	</td>
 	<td>
 		<form>
@@ -704,7 +736,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-	<button onclick="buySoldiers()" >Buy</button>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buySoldiers()" >Buy</button>
 	</td>
 	<td>Total Soldiers:</td>
 	<td id="num_soldiers">
@@ -725,7 +757,6 @@ window.onload = function() {
   <p>Resource Status</p>
  
   <ul class="w3-ul w3-card-4" style="width:50%">
-    <li id="commander_display"></li>
     <li id="money_display"></li>
     <li id="tanks_display"></li>
     <li id="food_display"></li>
@@ -734,7 +765,7 @@ window.onload = function() {
   </ul>
  
  <table class="w3-table w3-striped w3-border">
-   <tr class="w3-green"><th colspan="5">Battling</th></tr>
+   <tr class="w3-green w3-round-large"><th colspan="5">Battling</th></tr>
    <tr>
 	<td>Salvage Tanks
 	</td>
@@ -744,18 +775,18 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-	<button onclick="salvageTanks()" >Salvage</button>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="salvageTanks()" >Salvage</button>
 	</td>
 	<td>Total Salvaged:</td>
 	<td id="num_salvaged">
 	</td>
   </tr>  
      <tr>
-	<td>Soldiers ready for battle?
+	<td title="Keep requesting this information as you add soldiers, food, ammo. Recalling and recording casualties also effects your soldier readiness" >Soldiers ready for battle?
 	</td>
 	<td>
 
-	<button onclick="getSoldiersForBattle()" >Get</button>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="getSoldiersForBattle()" >Get</button>
 	</td>
 	<td>Total Ready for battle:</td>
 	<td id="soldiers_ready">
@@ -769,7 +800,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="sendSoldiersIntoBattle()" >Advance!</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="sendSoldiersIntoBattle()" >Advance!</button>
 	<td>Total in battle:</td>
 	<td id="soldiers_battling">
 	</td>
@@ -783,21 +814,21 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recallSoldiersFromBattle()" >Retreat!</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recallSoldiersFromBattle()" >Retreat!</button>
 	<td>Total Recalled:</td>
 	<td id="soldiers_recalled">
 	</td>
   </tr>  
  
   <tr>
-    <td title="Record Casualties">Record Casualties </td>
+    <td title="Rest in peace, brave soldiers!">Record Casualties</td>
 	<td>
 		<form>
 		<input name="record_casualties" id="record_casualties">
 		</form>
 	</td>
 	<td>
-		<button onclick="recordCasualties()" >RIP</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recordCasualties()" >RIP</button>
 	<td>Total Casualties:</td>
 	<td id="total_casualties">
 	</td>
@@ -811,12 +842,12 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recordPillagedBoxes()" >Pillage!</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recordPillagedBoxes()" >Pillage!</button>
 	<td>Total Pillaged Boxes:</td>
 	<td id="boxes_pillaged">
 	</td>
   </tr>  
- 
+  <tr> 
   <td>Record loot-boxes </td>
 	<td>
 		<form>
@@ -824,12 +855,21 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recordLootBoxes()" >Loot</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large" onclick="recordLootBoxes()" >Loot!</button>
 	<td>Total Loot Boxes:</td>
 	<td id="boxes_looted">
 	</td>
   </tr>  
 
+  <td title="Start a brand new war day. Food rations will be used up!">Let's fight another day</td>
+	<td>
+	</td>
+	<td>
+		<button class="w3-button w3-ripple w3-green w3-round-large" onclick="addWarDay()" >Add War Day</button>
+	<td>You've fought (days):</td>
+	<td id="days_of_war">
+	</td>
+  </tr>  
   
  
 </table>
