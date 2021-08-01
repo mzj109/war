@@ -53,7 +53,7 @@ function getNumSoldiersForBattle() {
  numSoldiersReady = Math.min(Math.min(enough_food_for,enough_ammo_for),(soldiers-soldiers_battling))
 
  if (numSoldiersReady == 0 ) { 
-   alert("Make sure you have enough food and ammo and soldiers who are not battling! Right now you have enough ammo for: " + enough_ammo_for + " soldiers. Enough food for: " + enough_food_for + " soldiers, and only: " + (soldiers - soldiers_battling )  + " soldiers available.")
+   alert("Make sure you have enough food and ammo and soldiers who are not battling! Right now you have enough ammo for: " + enough_ammo_for + " soldiers. Enough food for: " + enough_food_for + " soldiers, and only: " + (soldiers - soldiers_battling )  + " soldiers available for battle. Note: all of your soldiers maybe battling! Check the numbers!!")
  }
  
   return numSoldiersReady
