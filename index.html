@@ -50,7 +50,13 @@ function getNumSoldiersForBattle() {
  enough_food_for = Math.ceil(food / soldier_ready_for_battle['food'])
  enough_ammo_for = Math.ceil(ammo / soldier_ready_for_battle['ammo'])
 
- return  Math.min(Math.min(enough_food_for,enough_ammo_for),(soldiers-soldiers_battling))
+ numSoldiersReady = Math.min(Math.min(enough_food_for,enough_ammo_for),(soldiers-soldiers_battling))
+
+ if (numSoldiersReady == 0 ) { 
+   alert("Make sure you have enough food and ammo and soldiers who are not battling! Right now you have enough ammo for: " + enough_ammo_for + " soldiers. Enough food for: " + enough_food_for + " soldiers, and only: " + (soldiers - soldiers_battling )  + " soldiers available.")
+ }
+ 
+  return numSoldiersReady
  
  }
 
@@ -63,8 +69,8 @@ function getSoldiersForBattle() {
   alert("Please make sure your ammo and food are not zero!!! Make sure you have bought some soldiers!!!")
   return false
 } 
- 
- document.getElementById("soldiers_ready").innerHTML = Math.min(Math.min(enough_food_for,enough_ammo_for),soldiers)
+
+ document.getElementById("soldiers_ready").innerHTML = numSoldiersReady
  
  }
  
