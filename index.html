@@ -144,6 +144,7 @@ if (  numSoldiersReady <= 0 ) {
  
  document.getElementById("soldiers_battling").innerHTML = soldiers_battling
  document.getElementById("num_soldiers").innerHTML = soldiers
+ document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers
 
 
  } 
@@ -196,12 +197,57 @@ if (  numSoldiersReady <= 0 ) {
 
   casualties = casualties + record_casualties // print
   soldiers = soldiers - record_casualties //print
-  document.getElementById("total_casualties").innerHTML = total_casualties;
+  document.getElementById("total_casualties").innerHTML = casualties;
   document.getElementById("num_soldiers").innerHTML = soldiers;
+  document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
+
+ }
+ 
+function recordLootBoxes() {
+
+ record_lootBoxes = Number(document.getElementById("record_loot_boxes").value)
+
+ if (isNaN(record_lootBoxes) ) {
+  alert("you can only enter numbers in the loot  box");
+   return false;
+ }
+
+ if (record_lootBoxes == 0 ) {
+   alert("No point recording 0 loot boxes!");
+   return false;
+  }
+
+  money = money + ( record_lootBoxes * loot_value)
+  alert ("Good job, you made some money from loot!")
+  loot_boxes = loot_boxes + record_lootBoxes
   
+  document.getElementById("boxes_looted").innerHTML = loot_boxes;
+  document.getElementById("player_has").innerHTML = money;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
 
+ }
 
+function recordPillagedBoxes() {
 
+ record_pillaged_boxes = Number(document.getElementById("record_pillaged_boxes").value)
+
+ if (isNaN(record_pillaged_boxes) ) {
+  alert("you can only enter numbers in the pillage box");
+   return false;
+ }
+
+ if (record_pillaged_boxes == 0 ) {
+   alert("No point recording 0 pillage boxes!");
+   return false;
+  }
+
+  money = money + ( record_pillaged_boxes * pillage_value)
+  alert ("Good job, you made some money from pillaging!")
+  pillage_boxes = pillage_boxes + record_pillaged_boxes
+  
+  document.getElementById("boxes_pillaged").innerHTML = pillage_boxes;
+  document.getElementById("player_has").innerHTML = money;
+  document.getElementById("money_display").innerHTML = "Money " + money;
 
  }
  
@@ -308,7 +354,7 @@ function setMoney() {
 
   money = Number(document.getElementById("money").value);
   document.getElementById("player_has").innerHTML = money;
-  document.getElementById("money_display").innerHTML = money;
+  document.getElementById("money_display").innerHTML = "Money: ": money;
 }
 function setPlayer() {
   player_name = document.getElementById("player_name").value;
@@ -335,6 +381,7 @@ function buyTanks() {
   tanks = tanks + Number(document.getElementById("buy_tanks").value)
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("num_tanks").innerHTML = tanks;
+  document.getElementById("tanks_display").innerHTML = "Tanks: " + tanks;
   
 }
 
@@ -357,6 +404,8 @@ function buyAmmo() {
   ammo = ammo + Number(document.getElementById("buy_ammo").value)
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("num_ammo").innerHTML = ammo;
+  document.getElementById("ammo_display").innerHTML = "Ammo:" + ammo;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
   
 }
 
@@ -379,6 +428,8 @@ function buyFood() {
   food = food + Number(document.getElementById("buy_food").value)
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("num_food").innerHTML = food;
+  document.getElementById("food_display").innerHTML = "Food: "+ food;
+  document.getElementById("money_display").innerHTML = "Money: "+ money;
   
 }
 
@@ -425,7 +476,9 @@ function salvageTanks() {
   
   tanks = tanks - Number(document.getElementById("salvage_tanks").value)
   document.getElementById("player_has").innerHTML = money;
+  document.getElementById("money_display").innerHTML = "Money: "+ money;
   document.getElementById("num_tanks").innerHTML = tanks;
+  document.getElementById("tanks_display").innerHTML = "Tanks: " + tanks;
   document.getElementById("num_salvaged").innerHTML = tanks_salvaged;
   
 }
@@ -720,16 +773,15 @@ window.onload = function() {
  <div id="battle" class="w3-container war" style="display:none">
    
  
-  <p>w3-card</p>
+  <p>Resource Status</p>
  
-   <ul class="w3-ul w3-card-4" style="width:50%">
-    <li id=money_display></li>
-    <li>Eve</li>
-    <li>Adam</li>
+  <ul class="w3-ul w3-card-4" style="width:50%">
+    <li id="money_display"></li>
+    <li id="tanks_display"></li>
+    <li id="food_display"></li>
+    <li id="soldiers_display"></li>
+    <li id="ammo_display"></li>
   </ul>
- 
- 
-   
  
  <table class="w3-table w3-striped w3-border">
    <tr class="w3-green"><th colspan="5">Battling</th></tr>
@@ -767,7 +819,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="sendSoldiersIntoBattle()" >Set</button>
+		<button onclick="sendSoldiersIntoBattle()" >Advance!</button>
 	<td>Total in battle:</td>
 	<td id="soldiers_battling">
 	</td>
@@ -781,7 +833,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recallSoldiersFromBattle()" >Set</button>
+		<button onclick="recallSoldiersFromBattle()" >Retreat!</button>
 	<td>Total Recalled:</td>
 	<td id="soldiers_recalled">
 	</td>
@@ -795,7 +847,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recordCasulties()" >Set</button>
+		<button onclick="recordCasualties()" >RIP</button>
 	<td>Total Casualties:</td>
 	<td id="total_casualties">
 	</td>
@@ -809,7 +861,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recordPillagedBoxes()" >Set</button>
+		<button onclick="recordPillagedBoxes()" >Pillage!</button>
 	<td>Total Pillaged Boxes:</td>
 	<td id="boxes_pillaged">
 	</td>
@@ -822,7 +874,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button onclick="recordLootBoxes()" >Set</button>
+		<button onclick="recordLootBoxes()" >Loot</button>
 	<td>Total Loot Boxes:</td>
 	<td id="boxes_looted">
 	</td>
