@@ -4,34 +4,6 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
-<!--style>
-th, td {
-  border-bottom: 1px solid #ddd;
-}
-
-tr:hover {background-color: #f5f5f5;}
-
-th {
-  background-color: #04AA6D;
-  color: white;
-}
-
-#rc tr:nth-child(even) {
-  background-color: #eee;
-}
-#rc tr:nth-child(odd) {
- background-color: #fff;
-}
-#rc th {
-  background-color: black;
-  color: white;
-}
-
-textarea {
-    height: 1em;
-}
-
-</style-->
 <script type="text/javascript">
 // Disable Enter Key Press
 window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
@@ -62,13 +34,13 @@ var pillage_value = 10
 var soldiers_battling = 0
 var soldiers_recalled = 0
 
-function openTab(cityName) {
+function openTab(appTab) {
   var i;
   var x = document.getElementsByClassName("war");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";  
   }
-  document.getElementById(cityName).style.display = "block";  
+  document.getElementById(appTab).style.display = "block";  
 }
 
 function getNumSoldiersForBattle() {
@@ -354,10 +326,12 @@ function setMoney() {
 
   money = Number(document.getElementById("money").value);
   document.getElementById("player_has").innerHTML = money;
-  document.getElementById("money_display").innerHTML = "Money: ": money;
+  document.getElementById("money_display").innerHTML = "Money: "+ money;
 }
 function setPlayer() {
   player_name = document.getElementById("player_name").value;
+  document.getElementById("commander_display").innerHTML = "General Officer, Commander in Chief: "+ player_name;
+  document.getElementById("app_heading").innerHTML = "WMS : General Officer, Commander in Chief: "+ player_name.toUpperCase();
   document.getElementById("player_name_set").innerHTML = player_name;
 }
 
@@ -452,6 +426,7 @@ function buySoldiers() {
   soldiers = soldiers + Number(document.getElementById("buy_soldiers").value)
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("num_soldiers").innerHTML = soldiers;
+  document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
   
 }
 
@@ -499,7 +474,7 @@ window.onload = function() {
 </script>
 </head>
 <body>
-<h1>WMS (War Management System)</h1>
+<h1 id="app_heading">WMS (War Management System)</h1>
 
 
 <div class="w3-bar w3-black">
@@ -514,20 +489,6 @@ window.onload = function() {
 
 <table class="w3-table w3-striped w3-border">
 	   <tr class="w3-green"><th colspan="8">Resource Costs</th></tr>
- <tr>
-    <td>Set Commander's Name
-	</td>
-	<td>
-		<form>
-		<input name="player_name" id="player_name">
-		</form>
-	</td>
-	<td>
-		<button onclick="setPlayer()" >Set</button>
-	</td>
-	<td id="player_name_set">
-	</td>
-  </tr>
 
   
    <td>Set tank cost</td><td>		  
@@ -630,10 +591,11 @@ window.onload = function() {
 </div>
 
 <div id="oob" class="w3-container war" style="display:none">
-
+ 
+  
 <table class="w3-table w3-striped w3-border">
-   <tr class="w3-green"><th colspan="4">My Resources</th></tr>
- <!--tr>
+   <tr class="w3-green"><th colspan="4">General Officer, Commander In Chief</th></tr>
+  <tr>
     <td>Set Commander's Name
 	</td>
 	<td>
@@ -647,7 +609,10 @@ window.onload = function() {
 	<td id="player_name_set">
 	</td>
   </tr>
- <tr-->
+  </table>
+
+<table class="w3-table w3-striped w3-border">
+   <tr class="w3-green"><th colspan="4">My Resources</th></tr>
     <td>Set Initial Money
 	</td>
 	<td>
@@ -657,18 +622,15 @@ window.onload = function() {
 	</td>
 	<td>
 		<button onclick="setMoney()" >Set</button>
-	</td><td></tr>
-  </tr>
- <tr>
-	<td>You have: 
 	</td>
+
+	<td>You have: </td>
 	
 	<td id="player_has">
 	</td>
 	
-	<td>
-	</td><td></tr>
-  </tr>
+	
+	</tr>
 
   <tr>
 	<td>Buy Tanks
@@ -734,34 +696,6 @@ window.onload = function() {
 	</td>
   </tr>  
   
-   <!--tr>
-	<td>Salvage Tanks
-	</td>
-	<td>
-		<form>
-		<input name="salvage_tanks" id="salvage_tanks">
-		</form>
-	</td>
-	<td>
-	<button onclick="salvageTanks()" >Salvage</button>
-	</td>
-	<td>Total Salvaged:</td>
-	<td id="num_salvaged">
-	</td>
-  </tr>  
-     <tr>
-	<td>Soldiers ready for battle?
-	</td>
-	<td>
-
-	<button onclick="getSoldiersForBattle()" >Get</button>
-	</td>
-	<td>Total Ready for battle:</td>
-	<td id="soldiers_ready">
-	</td>
-  </tr--> 
-  
-  
  </table>
  
  </div>
@@ -776,6 +710,7 @@ window.onload = function() {
   <p>Resource Status</p>
  
   <ul class="w3-ul w3-card-4" style="width:50%">
+    <li id="commander_display"></li>
     <li id="money_display"></li>
     <li id="tanks_display"></li>
     <li id="food_display"></li>
