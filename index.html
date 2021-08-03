@@ -390,7 +390,8 @@ function setPlayer() {
 
 
 function buyTanks() {
-    if (isNaN(document.getElementById("buy_tanks").value) ) { 
+    
+  if (isNaN(document.getElementById("buy_tanks").value) ) { 
       alert("Must input numbers only");
     return false;
 	}
@@ -409,6 +410,7 @@ function buyTanks() {
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("num_tanks").innerHTML = tanks;
   document.getElementById("tanks_display").innerHTML = "Tanks: " + tanks;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
   
 }
 
@@ -480,6 +482,7 @@ function buySoldiers() {
   document.getElementById("player_has").innerHTML = money;
   document.getElementById("num_soldiers").innerHTML = soldiers;
   document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
+  document.getElementById("money_display").innerHTML = "Money: "+ money;
   
 }
 
