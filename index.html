@@ -9,7 +9,7 @@
 window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
 
 // sdlc
-var phase = 'prod'
+var phase = 'dev'
 
 // war day
 var day_of_war = 1
@@ -158,7 +158,6 @@ if (  numSoldiersReady <= 0 ) {
 
     if (send_planes > getNumPlanesForSortee() ) { alert("You are trying to send in more planes than you can afford!"); return false; }
 
- planes = planes - send_planes
  food_needed = send_planes * soldier_ready_for_battle['food'] // food
  fuel_needed = send_planes * gallons_per_sortee // each plane requires fuel for battle
  soldiers_battling = send_planes + soldiers_battling // each plane has one soldier
@@ -166,7 +165,7 @@ if (  numSoldiersReady <= 0 ) {
 
  food = food - food_needed
  fuel_gallons = fuel_gallons - fuel_needed
- alcms = alcms = alcm_needed
+ alcms = alcms - alcm_needed
  planes_attacking = planes_attacking + send_planes
 
 
@@ -176,6 +175,9 @@ if (  numSoldiersReady <= 0 ) {
  document.getElementById("num_planes_attacking").innerHTML = planes_attacking
  document.getElementById("num_alcms").innerHTML = alcms
  document.getElementById("num_food").innerHTML = food
+ document.getElementById("fuel_display").innerHTML = "Fuel: " + fuel_gallons
+ document.getElementById("num_fuel").innerHTML = fuel_gallons
+
  
 
    
@@ -281,7 +283,7 @@ function recordPlanesDown() {
   planes_attacking = planes_attacking - planes_down
   planes = planes - planes_down
   
-  document.getElementById("total_casualties").innerHTML = casualties;
+  document.getElementById("total_planes_down").innerHTML = casualties;
   document.getElementById("num_soldiers").innerHTML = soldiers;
   document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
   document.getElementById("planes_display").innerHTML = "Planes: " + planes;
@@ -583,7 +585,7 @@ function buyFuel() {
   money = money - total_fuel_cost
   fuel_gallons = fuel_gallons + buy_fuel
   document.getElementById("player_has").innerHTML = money;
-  document.getElementById("num_fuel_gallons").innerHTML = fuel_gallons;
+  document.getElementById("num_fuel").innerHTML = fuel_gallons;
   document.getElementById("fuel_display").innerHTML = "Fuel: " + fuel_gallons;
   document.getElementById("money_display").innerHTML = "Money: " + money;
   
@@ -745,11 +747,11 @@ window.onload = function() {
   money = 100000
   tanks = 10
   soldiers = 100
-  food = 100
-  ammo = 100
+  food = 1000
+  ammo = 1000
   planes = 100
-  fuel_gallons = 100
-  alcms = 100
+  fuel_gallons = 1000
+  alcms = 1000
   }
 
 
@@ -1268,7 +1270,7 @@ window.onload = function() {
 		</form>
 	</td>
 	<td>
-		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recallPlanes()" >Retreat!</button>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recallPlanes()" >Recall to base!</button>
 	<td>Total Recalled:</td>
 	<td id="planes_recalled">
 	</td>
