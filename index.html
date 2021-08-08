@@ -8,6 +8,9 @@
 // Disable Enter Key Press
 window.addEventListener('keydown',function(e){if(e.keyIdentifier=='U+000A'||e.keyIdentifier=='Enter'||e.keyCode==13){if(e.target.nodeName=='INPUT'&&e.target.type=='text'){e.preventDefault();return false;}}},true);
 
+// sdlc
+var phase = 'prod'
+
 // war day
 var day_of_war = 1
 // Resource Costs 
@@ -28,6 +31,20 @@ var soldier_ready_for_battle = { 'ammo' : 5, 'food' : 2 }
 var loot_boxes = 0
 var pillage_boxes = 0
 var casualties = 0
+
+// Planes
+var planes = 0
+var plane_cost = 200
+var fuel_gallons = 0
+var fuel_gallon_cost = 5
+var gallons_per_sortee = 10
+var alcm_cost = 10
+var alcm_per_sortee = 5
+var alcms = 0
+var planes_attacking = 0
+var planes_recalled = 0
+
+//
 var tank_salvage_pct=50
 var loot_value = 10
 var pillage_value = 10
@@ -47,8 +64,8 @@ function openTab(appTab) {
 
 function getNumSoldiersForBattle() {
 
- enough_food_for = Math.ceil(food / soldier_ready_for_battle['food'])
- enough_ammo_for = Math.ceil(ammo / soldier_ready_for_battle['ammo'])
+ enough_food_for = Math.floor(food / soldier_ready_for_battle['food'])
+ enough_ammo_for = Math.floor(ammo / soldier_ready_for_battle['ammo'])
  
   if ( enough_food_for == 0 || enough_ammo_for == 0 ) {
 
@@ -78,57 +95,51 @@ function getSoldiersForBattle() {
  document.getElementById("soldiers_ready").innerHTML = numSoldiersReady
  
  }
- 
- function sendSoldiersIntoBattle() {
- 
+
+function sendSoldiersIntoBattle() {
+
   sendSoldiers = Number(document.getElementById("send_soldiers_into_battle").value)
-   
+
  if (sendSoldiers <= 0 || isNaN(sendSoldiers )) {
   alert("How many soldiers did you want to send into battle again?")
- }   
+ }
 
  numSoldiersReady = getNumSoldiersForBattle()
 
  if ( isNaN(numSoldiersReady) ||  (! Number.isFinite(numSoldiersReady))  ) {
-  
+
   alert("Make sure you have bought some soldiers!!!")
   return false
-} 
+}
 
 if (  numSoldiersReady <= 0 ) {
 
   alert("Make sure you have enough resources, and soldiers!!")
   return false
-  
+
 }
 
  if ( document.getElementById("send_soldiers_into_battle").innerHTML > soldiers ) {
-   
+
    alert("You can't send into battle more soldiers than you currently have??!!??")
-   
+
  }
- 
- 
+
+
   if ( (numSoldiersReady - sendSoldiers) < 0 ) {
-   
-   alert("You can't send in more soldiers than are ready for battle!!" ) 
+
+   alert("You can't send in more soldiers than are ready for battle!!" )
    return false
- }  
- 
- 
+ }
+
+
  food_needed = sendSoldiers * soldier_ready_for_battle['food']
  ammo_needed = sendSoldiers * soldier_ready_for_battle['ammo']
-/* 
- if ( (food_needed > food) || (ammo_needed > ammo) ) {
-      alert("Manage your resources, your soldiers do not have enough food and/or ammo to go into battle")
-      return false
- }
-*/ 
- 
+
  soldiers_battling = sendSoldiers + soldiers_battling
  food = food - food_needed
  ammo = ammo - ammo_needed
- 
+
  document.getElementById("soldiers_battling").innerHTML = soldiers_battling
  document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers
  document.getElementById("food_display").innerHTML = "Food: " + food
@@ -137,8 +148,39 @@ if (  numSoldiersReady <= 0 ) {
  document.getElementById("num_food").innerHTML = food
 
 
- } 
+ }
  
+  function sendPlanes() {
+ 
+  send_planes = Number(document.getElementById("send_planes").value)
+
+  if (isNaN(send_planes)) { alert("Please eneter a number"); return false; }
+
+    if (send_planes > getNumPlanesForSortee() ) { alert("You are trying to send in more planes than you can afford!"); return false; }
+
+ planes = planes - send_planes
+ food_needed = send_planes * soldier_ready_for_battle['food'] // food
+ fuel_needed = send_planes * gallons_per_sortee // each plane requires fuel for battle
+ soldiers_battling = send_planes + soldiers_battling // each plane has one soldier
+ alcm_needed = alcm_per_sortee * send_planes
+
+ food = food - food_needed
+ fuel_gallons = fuel_gallons - fuel_needed
+ alcms = alcms = alcm_needed
+ planes_attacking = planes_attacking + send_planes
+
+
+ document.getElementById("soldiers_battling").innerHTML = soldiers_battling
+ document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers
+ document.getElementById("food_display").innerHTML = "Food: " + food
+ document.getElementById("num_planes_attacking").innerHTML = planes_attacking
+ document.getElementById("num_alcms").innerHTML = alcms
+ document.getElementById("num_food").innerHTML = food
+ 
+
+   
+ }   
+
  function recallSoldiersFromBattle() {
 
  recall_now = Number(document.getElementById("recall_soldiers_from_battle").value)
@@ -169,6 +211,25 @@ if (  numSoldiersReady <= 0 ) {
   soldiers_recalled = soldiers_recalled + recall_now
   document.getElementById("soldiers_battling").innerHTML = soldiers_battling;
   document.getElementById("soldiers_recalled").innerHTML = soldiers_recalled;
+   
+ }
+ 
+  function recallPlanes() {
+
+ recall_now = Number(document.getElementById("recall_planes").value)
+
+ if (isNaN(recall_now) ) { alert("you can only enter numbers in the recall box"); return false; }
+ if (recall_now == 0 ) { alert("No point recalling 0 planes!"); return false; }
+ if ( recall_now > planes_attacking) { alert("you cannot recall more than planes than currently attacking"); return false; }
+
+  soldiers_battling = soldiers_battling - recall_now
+  soldiers_recalled = soldiers_recalled + recall_now
+  planes_recalled = planes_recalled + recall_now
+  planes_attacking = planes_attacking - recall_now
+  document.getElementById("soldiers_battling").innerHTML = soldiers_battling;
+  document.getElementById("soldiers_recalled").innerHTML = soldiers_recalled;
+  document.getElementById("planes_recalled").innerHTML = planes_recalled;
+  document.getElementById("num_planes_attacking").innerHTML = planes_attacking;
    
  }
 
@@ -203,6 +264,29 @@ if (  numSoldiersReady <= 0 ) {
   document.getElementById("num_soldiers").innerHTML = soldiers;
   document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
   document.getElementById("soldiers_battling").innerHTML = soldiers_battling;
+
+ }
+ 
+function recordPlanesDown() {
+
+ planes_down = Number(document.getElementById("record_planes_down").value)
+
+ if (isNaN(planes_down) ) { alert("you can only enter numbers in the recall box"); return false; }
+ if (planes_down == 0 ) { alert("No point recording 0 planes down!"); return false; }
+ if (planes_down > planes_attacking) { alert("You cannot record more aircraft losses than aircraft currently attacking"); return false; }
+
+  casualties = casualties + planes_down // print
+  soldiers = soldiers - planes_down //print, 1 soldier per plane
+  soldiers_battling = soldiers_battling - planes_down
+  planes_attacking = planes_attacking - planes_down
+  planes = planes - planes_down
+  
+  document.getElementById("total_casualties").innerHTML = casualties;
+  document.getElementById("num_soldiers").innerHTML = soldiers;
+  document.getElementById("soldiers_display").innerHTML = "Soldiers: " + soldiers;
+  document.getElementById("planes_display").innerHTML = "Planes: " + planes;
+  document.getElementById("soldiers_battling").innerHTML = soldiers_battling;
+  document.getElementById("num_planes_attacking").innerHTML = planes_attacking;
 
  }
  
@@ -302,6 +386,33 @@ function recordPillagedBoxes() {
      soldier_cost = Number(document.getElementById("soldier_cost").value);
    
   }
+   
+   if (resourceName == 'plane_cost') {
+     if (isNaN(document.getElementById("plane_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     plane_cost = Number(document.getElementById("plane_cost").value);
+   
+  }
+   
+   if (resourceName == 'fuel_gallon_cost') {
+     if (isNaN(document.getElementById("fuel_gallon_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     fuel_gallon_cost = Number(document.getElementById("fuel_gallon_cost").value);
+   
+  }
+   
+   if (resourceName == 'alcm_cost') {
+     if (isNaN(document.getElementById("alcm_cost").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     alcm_cost = Number(document.getElementById("alcm_cost").value);
+   
+  }
 
    if (resourceName == 'ammo_cost') {
      if (isNaN(document.getElementById("ammo_cost").value) ) { 
@@ -342,6 +453,22 @@ function recordPillagedBoxes() {
 }
 
 function setOperatingCost(resourceName) {
+
+   if (resourceName == 'gallons_per_sortee') {
+     if (isNaN(document.getElementById("gallons_per_sortee").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     gallons_per_sortee = Number(document.getElementById("gallons_per_sortee").value);
+  }  
+   
+  if (resourceName == 'alcm_per_sortee') {
+     if (isNaN(document.getElementById("alcm_per_sortee").value) ) { 
+       alert("Must input numbers only");
+       return false;
+	    }   
+     alcm_per_sortee = Number(document.getElementById("alcm_per_sortee").value);
+  }  
 
    if (resourceName == 'ammo_per_soldier') {
      if (isNaN(document.getElementById("ammo_per_soldier").value) ) { 
@@ -393,6 +520,100 @@ function setPlayer() {
   document.getElementById("player_name_set").innerHTML = player_name;
 }
 
+function buyPlanes() {
+
+  buy_planes = Number(document.getElementById("buy_planes").value)
+    
+  if (isNaN(buy_planes) ) { 
+      alert("Must input numbers only");
+    return false;
+	}
+
+  total_plane_cost = buy_planes * plane_cost
+  
+   if ((money - total_plane_cost) < 0) {
+    alert("You don\'t have enough money to buy planes!! You are trying to spend: " + total_plane_cost + "! And you only have: " + money)
+	return false;
+	}
+  
+  money = money - total_plane_cost
+  planes = planes + buy_planes
+  document.getElementById("player_has").innerHTML = money;
+  document.getElementById("num_planes").innerHTML = planes;
+  document.getElementById("planes_display").innerHTML = "Planes: " + planes;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
+  
+  
+  } 
+
+ function getNumPlanesForSortee() {
+ numPlanesReady = 0
+ enough_food_for = Math.floor(food / soldier_ready_for_battle['food'])
+ enough_alcm_for = Math.floor(alcms / alcm_per_sortee)
+ enough_fuel_for = Math.floor(fuel_gallons / gallons_per_sortee)
+ 
+  if ( enough_food_for <= 0 || enough_alcm_for <= 0 || enough_fuel_for <= 0 ) {
+    numPlanesReady = 0
+  } else {
+    numPlanesReady = Math.min(Math.min(enough_food_for,enough_alcm_for,enough_fuel_for),(soldiers-soldiers_battling),(planes-planes_attacking))
+ }
+ if (numPlanesReady == 0 ) { 
+   alert("Make sure you have enough food,fuel,pilots, planes who are not battling! Right now you have enough ALCMs for: " + enough_alcm_for + " Planes. \nEnough food for: " + enough_food_for + " pilots, and only: " + (soldiers - soldiers_battling )  + " soldiers available for battle!! You also have enough fuel for: " + enough_fuel_for + " planes. You have a total of: " + planes + " planes, and: " + planes_attacking + " currently attacking!")
+ }
+  document.getElementById("planes_ready").innerHTML = numPlanesReady
+  return numPlanesReady
+ }
+
+function buyFuel() {
+
+  buy_fuel = Number(document.getElementById("buy_fuel").value)
+    
+  if (isNaN(buy_fuel) ) { 
+      alert("Must input numbers only");
+    return false;
+	}
+
+  total_fuel_cost = buy_fuel * fuel_gallon_cost
+
+   if ((money - total_fuel_cost) < 0) {
+    alert("You don\'t have enough money to buy fuel!! You are trying to spend: " + total_fuel_cost + "! And you only have: " + money)
+	return false;
+	} 
+  
+  money = money - total_fuel_cost
+  fuel_gallons = fuel_gallons + buy_fuel
+  document.getElementById("player_has").innerHTML = money;
+  document.getElementById("num_fuel_gallons").innerHTML = fuel_gallons;
+  document.getElementById("fuel_display").innerHTML = "Fuel: " + fuel_gallons;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
+  
+}
+
+function buyAlcm() {
+
+  buy_alcm = Number(document.getElementById("buy_alcm").value)
+    
+  if (isNaN(buy_alcm) ) { 
+      alert("Must input numbers only");
+    return false;
+	}
+
+  total_alcm_cost = buy_alcm * alcm_cost
+
+   if ((money - total_alcm_cost) < 0) {
+    alert("You don\'t have enough money to buy ALCMs!! You are trying to spend: " + total_alcm_cost + "! And you only have: " + money)
+	return false;
+	} 
+  
+  money = money - total_alcm_cost
+  alcms = buy_alcm + alcms
+  document.getElementById("player_has").innerHTML = money;
+  document.getElementById("num_alcms").innerHTML = alcms;
+  document.getElementById("alcm_display").innerHTML = "ALCMs: " + alcms;
+  document.getElementById("money_display").innerHTML = "Money: " + money;
+  
+}
+
 
 function buyTanks() {
     
@@ -401,8 +622,6 @@ function buyTanks() {
     return false;
 	}
 
-
-  	
   tank_total_cost = Number(document.getElementById("buy_tanks").value) * tank_cost;
   
    if ((money - tank_total_cost) < 0) {
@@ -520,6 +739,21 @@ function salvageTanks() {
 }
 
 window.onload = function() {
+
+ if ( phase == 'dev' ) {
+
+  money = 100000
+  tanks = 10
+  soldiers = 100
+  food = 100
+  ammo = 100
+  planes = 100
+  fuel_gallons = 100
+  alcms = 100
+  }
+
+
+
  document.getElementById("tank_cost").value =  tank_cost;
  document.getElementById("soldier_cost").value = soldier_cost;
  document.getElementById("ammo_cost").value = ammo_cost;
@@ -529,6 +763,24 @@ window.onload = function() {
  document.getElementById("salvaging_a_tank").value =  tank_salvage_pct
  document.getElementById("loot_value").value =  loot_value;
  document.getElementById("pillage_value").value =  pillage_value;
+ document.getElementById("plane_cost").value =  plane_cost;
+ document.getElementById("fuel_gallon_cost").value =  fuel_gallon_cost;
+ document.getElementById("alcm_cost").value =  alcm_cost;
+ document.getElementById("alcm_per_sortee").value =  alcm_per_sortee;
+ document.getElementById("gallons_per_sortee").value =  gallons_per_sortee;
+
+ // Display
+ document.getElementById("player_has").innerHTML =  money;
+ document.getElementById("num_ammo").innerHTML =  ammo;
+ document.getElementById("num_tanks").innerHTML =  tanks;
+ document.getElementById("num_food").innerHTML =  food;
+ document.getElementById("num_soldiers").innerHTML =  soldiers;
+ document.getElementById("num_planes").innerHTML =  planes;
+ document.getElementById("num_alcms").innerHTML =  alcms;
+ document.getElementById("num_fuel").innerHTML =  fuel_gallons;
+ document.getElementById("planes_display").innerHTML =  "Planes: "+planes;
+
+ 
   
 }
 
@@ -539,7 +791,7 @@ window.onload = function() {
 
 
 <div class="w3-bar w3-black">
-  <button class="w3-bar-item w3-button" onclick="openTab('war_params')">1: War Parameters</button>
+  <button class="w3-bar-item w3-button" onclick="openTab('war_params')">1: War Economy</button>
   <button class="w3-bar-item w3-button" onclick="openTab('oob')">2: Order of Battle</button>
   <button class="w3-bar-item w3-button" onclick="openTab('battle')">3: Battle!</button>
 </div>
@@ -588,6 +840,36 @@ window.onload = function() {
 		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('food_cost')" >Set</button>
 		  </td>
 		  </tr>
+		  
+      
+      <tr>
+		  <td title="Plane Cost">1 attack aircraft costs, $:</td><td>
+		  <input type="text" name="plane_cost" id="plane_cost"  </input>
+		  </td>
+		  <td>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('plane_cost')" >Set</button>
+		  </td>
+		  </tr>
+      
+      <tr>
+		  <td title="A gallon of fuel">1 gallon of jet-fuel costs, $:</td><td>
+		  <input type="text" name="fuel_gallon_cost" id="fuel_gallon_cost"  </input>
+		  </td>
+		  <td>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('fuel_gallon_cost')" >Set</button>
+		  </td>
+		  </tr>
+      
+      
+      <tr>
+		  <td title="1 Air Launched Cruise missile">1 ALCM (Air Launched Cruise Missle) costs, $:</td><td>
+		  <input type="text" name="alcm_cost" id="alcm_cost"  </input>
+		  </td>
+		  <td>
+		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('alcm_cost')" >Set</button>
+		  </td>
+		  </tr>
+
 </table>	
 
 
@@ -621,7 +903,20 @@ window.onload = function() {
 		  <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('salvaging_a_tank')" >Set</button>
 		  </td>
 	  </tr>
+	  
+    <tr>		  
+	    <td title="How many gallons of fuel required for an attack?">Gallons of fuel a plane requires to fly a sortee</td>
+      <td> <input type="text" name="gallons_per_sortee" id="gallons_per_sortee"  ></input> </td>
+		  <td> <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('gallons_per_sortee')" >Set</button>
+		  </td>
+	  </tr>
 
+    <tr>		  
+	    <td title="How many ALCM's required for attack?">Number of ALCM's required for plane to fly a  sortee</td>
+      <td> <input type="text" name="alcm_per_sortee" id="alcm_per_sortee"  ></input> </td>
+		  <td> <button class="w3-button w3-ripple w3-green w3-round-large"onclick="setResourceCost('alcm_per_sortee')" >Set</button>
+		  </td>
+	  </tr>
 	  
 	</table>
   	
@@ -686,7 +981,6 @@ window.onload = function() {
 	</td>
 
 	<td>You have: </td>
-	
 	<td id="player_has">
 	</td>
 	
@@ -757,6 +1051,54 @@ window.onload = function() {
 	</td>
   </tr>  
   
+  <tr>
+	<td title="" >Buy Planes
+	</td>
+	<td>
+		<form>
+		<input name="buy_planes" id="buy_planes">
+		</form>
+	</td>
+	<td>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buyPlanes()" >Buy</button>
+	</td>
+	<td>Total Planes:</td>
+	<td id="num_planes">
+	</td>
+  </tr>  
+  
+  <tr>
+	<td title="" >Buy Jet Fuel (Gallons)
+	</td>
+	<td>
+		<form>
+		<input name="buy_fuel" id="buy_fuel">
+		</form>
+	</td>
+	<td>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buyFuel()" >Buy</button>
+	</td>
+	<td>Total Fuel:</td>
+	<td id="num_fuel">
+	</td>
+  </tr>  
+  
+  <tr>
+	<td title="Air Launched Cruise Missiles" >Buy ALCMs
+	</td>
+	<td>
+		<form>
+		<input name="buy_alcm" id="buy_alcm">
+		</form>
+	</td>
+	<td>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="buyAlcm()" >Buy</button>
+	</td>
+	<td>Total ALCMs:</td>
+	<td id="num_alcms">
+	</td>
+  </tr>  
+  
  </table>
  
  </div>
@@ -776,10 +1118,14 @@ window.onload = function() {
     <li id="food_display"></li>
     <li id="soldiers_display"></li>
     <li id="ammo_display"></li>
+    <li id="planes_display"></li>
+    <li id="fuel_display"></li>
+    <li id="alcm_display"></li>
+
   </ul>
  
  <table class="w3-table w3-striped w3-border">
-   <tr class="w3-green w3-round-large"><th colspan="5">Battling</th></tr>
+   <tr class="w3-green w3-round-large"><th colspan="5">Ground War</th></tr>
    <tr>
 	<td>Salvage Tanks
 	</td>
@@ -885,6 +1231,64 @@ window.onload = function() {
 	</td>
   </tr>  
   
+ 
+</table>
+
+<table class="w3-table w3-striped w3-border">
+   <tr class="w3-green w3-round-large"><th colspan="5">Air War</th></tr>
+
+     <tr>
+	<td title="" >Aircraft ready for sortee?</td>
+	<td>
+	<button class="w3-button w3-ripple w3-green w3-round-large"onclick="getNumPlanesForSortee()" >Get</button>
+	</td>
+	<td>Total Ready for sortee:</td>
+	<td id="planes_ready">
+  </td><td></td>
+  </tr> 
+ <tr>
+    <td>Send Attack Aircraft</td>
+	<td>
+		<form>
+		<input name="send_planes" id="send_planes">
+		</form>
+	</td>
+	<td>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="sendPlanes()" >God Speed!</button>
+	<td>Total Flying:</td>
+	<td id="num_planes_attacking">
+	</td>
+  </tr>
+  
+ <tr>
+    <td>Recall Planes </td>
+	<td>
+		<form>
+		<input name="recall_planes" id="recall_planes">
+		</form>
+	</td>
+	<td>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recallPlanes()" >Retreat!</button>
+	<td>Total Recalled:</td>
+	<td id="planes_recalled">
+	</td>
+  </tr>  
+ 
+  <tr>
+    <td title="">Record Aircraft Losses</td>
+	<td>
+		<form>
+		<input name="record_planes_down" id="record_planes_down">
+		</form>
+	</td>
+	<td>
+		<button class="w3-button w3-ripple w3-green w3-round-large"onclick="recordPlanesDown()" >RIP</button>
+	<td>Total Casualties:</td>
+	<td id="total_planes_down">
+	</td>
+  </tr>  
+
+
  
 </table>
  
